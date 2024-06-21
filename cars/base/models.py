@@ -2,6 +2,7 @@
 
 from django.db import models
 from django.contrib.auth.models import AbstractUser, Group, Permission
+from django.core.exceptions import ValidationError
 
 class User(AbstractUser):
     first_name = models.CharField(max_length=50, null=True)
@@ -52,3 +53,71 @@ class Car(models.Model):
 
     def __str__(self):
         return f"{self.make} {self.model}"
+    
+    
+    
+    
+    
+    
+    
+class CarAvailability(models.Model):
+    car = models.ForeignKey('Car', on_delete=models.CASCADE)
+    date = models.DateField()
+
+    def __str__(self):
+        return f"Availability for {self.car} on {self.date}"
+
+class Booking(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    car = models.ForeignKey('Car', on_delete=models.CASCADE)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    loc_from = models.CharField(max_length=50, default="")
+    loc_to = models.CharField(max_length=50, default="")
+    total_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    booking_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Booking {self.id} - {self.user.username} - {self.car}"
+
+    def save(self, *args, **kwargs):
+        # Calculate total cost based on the number of days and car's price
+        if self.start_date and self.end_date and self.car.price:
+            self.total_cost = (self.end_date - self.start_date).days * self.car.price
+        super().save(*args, **kwargs)
+
+    def clean(self):
+        # Check if the car is available for the selected dates
+        if self.start_date and self.end_date:
+            car_availabilities = CarAvailability.objects.filter(
+                car=self.car,
+                date__range=[self.start_date, self.end_date]
+            )
+            if car_availabilities.count() != (self.end_date - self.start_date).days + 1:
+                raise ValidationError('Car is not available for the selected dates.')
+            # Check if the car is already booked by another user for the same period
+            conflicting_bookings = Booking.objects.filter(
+                car=self.car,
+                start_date__lte=self.end_date,
+                end_date__gte=self.start_date
+            ).exclude(user=self.user)
+            if conflicting_bookings.exists():
+                raise ValidationError('Car is not available for the selected dates.')
+    # def __str__(self):
+    #     return f"Booking {self.id} - {self.user.username} - {self.car}"
+
+    # def save(self, *args, **kwargs):
+    #     # Calculate total cost based on the number of days and car's price
+    #     if self.start_date and self.end_date and self.car.price:
+    #         self.total_cost = (self.end_date - self.start_date).days * self.car.price
+    #     super().save(*args, **kwargs)
+
+    # def clean(self):
+    #     # Check if the car is available for the selected dates
+    #     if self.start_date and self.end_date:
+    #         car_availabilities = CarAvailability.objects.filter(
+    #             car=self.car,
+    #             date__range=[self.start_date, self.end_date]
+    #         )
+    #         if car_availabilities.count() != (self.end_date - self.start_date).days + 1:
+    #             raise ValidationError('Car is not available for the selected dates.')

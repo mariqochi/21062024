@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 from .models import Car, Type, User
-from .forms import CarForm, UserUpdateForm
+from .forms import BookingForm, UserUpdateForm
 from django.contrib.auth import authenticate, login, logout
   # Change: Added import for User model
 #from .forms import UserForm, MyUserCreationForm   # CustomerForm  # Change: Added import for UserForm and CustomerForm
@@ -104,6 +104,96 @@ def update_user(request, pk):
 
     return render(request, "base/update_user.html", {'form': form})
 
+
+
+
+
+
+from .forms import BookingForm  # Assuming you have a form for booking input
+
+@login_required
+def create_booking(request, car_id):
+    car = Car.objects.get(pk=car_id)
+    if request.method == 'POST':
+        form = BookingForm(request.POST)
+        if form.is_valid():
+            booking = form.save(commit=False)
+            booking.user = request.user
+            booking.car = car
+            try:
+                booking.clean()  # Validate availability
+            except ValidationError as e:
+                form.add_error(None, e)
+                return render(request, 'bookings/booking_form.html', {'form': form})
+
+            booking.save()
+            return redirect('booking_success')  # Redirect to a success page or view
+    else:
+        form = BookingForm(initial={'car': car})
+    
+    return render(request, 'bookings/booking_form.html', {'form': form})
+
+
+
+from django.shortcuts import render
+from .models import Car
+
+def available_cars(request):
+    # Retrieve available cars logic goes here
+    cars = Car.objects.filter(is_available=True)  # Example logic to filter available cars
+
+    context = {
+        'cars': cars
+    }
+    return render(request, 'base/available_cars.html', context)
+
+
+
+# def book_car(request, car_id):
+#     car = get_object_or_404(Car, pk=car_id)
+#     # Additional logic for booking the car can go here
+#     return render(request, 'base/book_car.html', {'car': car})
+
+
+# from django.shortcuts import render, get_object_or_404
+# from django.http import HttpResponse
+# from .models import Car
+
+# def book_car(request, car_id):
+#     car = get_object_or_404(Car, pk=car_id)
+#     if request.method == 'POST':
+#         # Process booking logic here
+#         return HttpResponse("Booking successful!")  # Replace with appropriate response
+    
+#     return render(request, 'base/book_car.html', {'car': car})
+
+
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+from django.core.exceptions import ValidationError
+from .models import Car, Booking
+from .forms import BookingForm
+def book_car(request, car_id):
+    car = get_object_or_404(Car, pk=car_id)
+
+    if request.method == 'POST':
+        form = BookingForm(request.POST)
+        if form.is_valid():
+            booking = form.save(commit=False)
+            booking.user = request.user  # Assuming the user is logged in
+            booking.car = car
+            try:
+                booking.clean()
+                booking.save()
+                messages.success(request, 'You have booked the car successfully!')
+                return redirect('')  # Redirect to the home page
+            except ValidationError as e:
+                form.add_error(None, e.message)
+    else:
+        form = BookingForm()
+
+    return render(request, 'base/book_car.html', {'car': car, 'form': form})
 
 
 # @login_required(login_url='login') es bolo

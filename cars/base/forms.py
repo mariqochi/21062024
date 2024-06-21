@@ -1,5 +1,5 @@
 from django.forms import ModelForm
-from .models import Car, Type
+from .models import Car, Type, Booking
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from .models import User
@@ -53,3 +53,22 @@ class CarForm(ModelForm):
         model = Car
         fields = '__all__'
         
+
+
+from .models import Booking
+
+class BookingForm(forms.ModelForm):
+    class Meta:
+        model = Booking
+        fields = ['start_date', 'end_date', 'loc_from', 'loc_to']
+
+    def clean(self):
+        cleaned_data = super().clean()
+        start_date = cleaned_data.get('start_date')
+        end_date = cleaned_data.get('end_date')
+
+        if start_date and end_date:
+            if end_date < start_date:
+                raise forms.ValidationError("End date must be after start date.")
+
+        return cleaned_data

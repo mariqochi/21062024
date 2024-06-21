@@ -17,6 +17,7 @@ from django.db.models import Q
 
 
 
+
 def home(request):
     query = request.GET.get('q', "") if request.GET.get('q') !=None else ""
     
@@ -88,18 +89,35 @@ def register_page(request):
 
 #     return render(request, "base/update-user.html", {'form': form})
 
+
 @login_required(login_url='login')
 def update_user(request, pk):
-    user = get_object_or_404(User, pk=pk)  # Fetch the user object based on pk
-    form = UserForm(instance=user)
+    user = get_object_or_404(User, pk=pk)
+    form = UserUpdateForm(instance=user)
 
     if request.method == "POST":
-        form = UserForm(request.POST, instance=user)
+        form = UserUpdateForm(request.POST, instance=user)
         if form.is_valid():
             form.save()
-            return redirect('user-profile', pk=user.pk)  # Redirect to user profile page
+            messages.success(request, 'Your profile has been updated successfully.')
+            return redirect('home')  # Redirect to the home page after successful update
 
     return render(request, "base/update_user.html", {'form': form})
+
+
+
+# @login_required(login_url='login') es bolo
+# def update_user(request, pk):
+#     user = get_object_or_404(User, pk=pk)  # Fetch the user object based on pk
+#     form = UserUpdateForm(instance=user)
+
+#     if request.method == "POST":
+#         form = UserForm(request.POST, instance=user)
+#         if form.is_valid():
+#             form.save()
+#             return redirect('home', pk=user.pk)  # Redirect to user profile page
+
+#     return render(request, "base/update_user.html", {'form': form})
 
 
 

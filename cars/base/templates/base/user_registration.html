@@ -1,0 +1,70 @@
+{% extends 'main.html' %}
+{% load static %}
+
+{% block content %}
+<main class="auth layout">
+  <div class="container">
+    <div class="layout__box">
+      <div class="layout__boxHeader">
+        <div class="layout__boxTitle">
+          <h3>User Registration</h3>
+        </div>
+      </div>
+      <div class="layout__body">
+        <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate autocomplete="off">
+          {% csrf_token %}
+          {{ form.as_p }}  {# Render all fields as paragraphs #}
+          <button class="btn btn-primary mt-3" type="submit">Register</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</main>
+
+<style>
+  /* Custom CSS for form styling */
+  .layout__box {
+    margin-bottom: 20px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+  }
+
+  .form-group {
+    margin-bottom: 20px; /* Adds bottom margin to each form-group */
+  }
+
+  label {
+    font-weight: bold;
+    color: #333;
+    display: block; /* Ensures each label is on a new line */
+    margin-bottom: 5px; /* Adds space between label and input */
+  }
+
+  .btn-primary {
+    background-color: #007BFF; /* Change this to your desired color */
+    border-color: #007BFF; /* Matching border color */
+  }
+
+  .btn-primary:hover {
+    background-color: #0056b3; /* Change this to a darker shade or another color for hover effect */
+    border-color: #0056b3;
+  }
+
+  .auth.layout {
+    padding: 20px;
+  }
+</style>
+
+<script>
+  // JavaScript to disable autocomplete
+  document.addEventListener("DOMContentLoaded", function() {
+    var forms = document.getElementsByTagName("form");
+    for (var i = 0; i < forms.length; i++) {
+      forms[i].setAttribute("autocomplete", "off");
+    }
+  });
+</script>
+<script src="{% static 'js/disable-autocomplete.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,169 @@
+{% extends 'main.html' %}
+
+{% block content %}
+    <style>
+        .home-container {
+            display: grid;
+            grid-template-columns: 1fr 3fr;
+            gap: 20px;
+        }
+
+        .big-button {
+            font-size: 1.5em;
+            padding: 10px 20px;
+            background-color: #007BFF; /* Change this to your desired color */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: inline-block;
+            text-align: center;
+            text-decoration: none;
+            margin-bottom: 20px; /* Added margin bottom to create space */
+        }
+
+        .big-button:hover {
+            background-color: #0056b3; /* Change this to a darker shade or another color for hover effect */
+        }
+
+        h1.welcome-heading {
+            font-size: 2em; /* Larger font size */
+            color: #0047AB; /* Dark blue color */
+        }
+
+        h1.choose-heading {
+            font-size: 1.2em; /* Smaller font size */
+            color: #333; /* Darker grey color */
+        }
+
+        .car-name {
+            font-size: 1em; /* Adjust the font size for car names */
+            margin-bottom: 5px; /* Optional: Add spacing between car names */
+        }
+
+        .car-list {
+            margin-top: 10px; /* Added margin top for space between button and car list */
+        }
+    </style>
+
+    <div class="home-container">
+        <div>
+            <h1 class="choose-heading">Choose Type of Car</h1>
+            <hr>
+            <div>
+                <a href="{% url 'home' %}">All</a>
+            </div>
+            {% for type in types %}
+                <div>
+                    <a href="{% url 'home' %}?q={{ type.name }}">{{ type.name }}</a>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div>
+            {% comment %} <h1>Home Page</h1> {% endcomment %}
+
+            <h1 class="welcome-heading">Welcome to the Car Rental Service</h1>
+            <a href="#" class="big-button">Select a car to book from the available options.</a>
+
+            <div class="car-list">
+                {% for car in cars %}
+                    <div>
+                        <a href="{% url 'car' pk=car.id %}">
+                            <h1 class="car-name">{{ car.make }} {{ car.model }}</h1>
+                            {% if car.picture %}
+                                <img src="{{ car.picture.url }}" alt="{{ car.make }} {{ car.model }}" style="width:200px;height:auto;">
+                            {% else %}
+                                <p>No image available</p>
+                            {% endif %}
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+
+
+
+{% comment %} {% extends 'main.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <h1>Cars Available for Rent</h1>
+            <ul>
+                {% for car in cars %}
+                <li>{{ car.make }} - {{ car.model }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="col-md-6">
+            <h1>Car Types</h1>
+            <ul>
+                {% for car_type in car_types %}
+                <li>{{ car_type.name }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %} {% endcomment %}
+
+
+
+
+
+
+{% comment %} {% extends 'main.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6">
+        <h1>Cars Available for Rent</h1>
+        <ul>
+            {% for car in cars %}
+            <li>{{ car.make }} - {{ car.model }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="col-md-6">
+        <h1>Car Types</h1>
+        <ul>
+            {% for car_type in car_types %}
+            <li>{{ car_type }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %} {% endcomment %}
+
+
+{% comment %} {% extends 'main.html' %}
+
+{% block extrastyle %}
+<style>
+    /* Adjust font size for car listings */
+    .car-title {
+        font-size: 18px; /* Increase or decrease as needed */
+        font-weight: bold; /* Optional: Make text bold */
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+    <h1>Home</h1>
+    <h2>Choose a car type</h2>
+
+    {% for car in cars %}
+        <a href="{% url 'car' car.id %}">
+            <h3 class="car-title">{{ car.make }} {{ car.model }}</h3>
+        </a>
+    {% endfor %}
+
+{% endblock %} {% endcomment %}
+

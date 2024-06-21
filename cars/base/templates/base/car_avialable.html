@@ -1,0 +1,14 @@
+{% extends "main.html" %}
+{% block content %}
+  <h2>Available Cars</h2>
+  <ul>
+    {% for car in cars %}
+      <li>
+        <h3>{{ car.make }} {{ car.model }} ({{ car.year }})</h3>
+        <img src="{{ car.image.url }}" alt="{{ car.make }} {{ car.model }}">
+        <p>Daily Rate: ${{ car.daily_rate }}</p>
+        <a href="{% url 'book_car' car.id %}">Book Now</a>
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}

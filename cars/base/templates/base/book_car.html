@@ -1,0 +1,62 @@
+{% extends 'main.html' %}
+
+{% block content %}
+    <h1>Book Car</h1>
+    <div class="car-details">
+        <h2>{{ car.make }} {{ car.model }}</h2>
+        <p><strong>Manufacturing Year:</strong> {{ car.manufacturing_year }}</p>
+        <p><strong>Fuel Consumption:</strong> {{ car.fuel_consumption }}</p>
+        <p><strong>Color:</strong> {{ car.color }}</p>
+        <p><strong>Number of Seats:</strong> {{ car.num_seats }}</p>
+        <p><strong>Car Type:</strong> {{ car.car_type }}</p>
+        {% if car.picture %}
+            <img src="{{ car.picture.url }}" alt="{{ car.make }} {{ car.model }}" style="max-width: 300px; height: auto;">
+        {% else %}
+            <p>No image available</p>
+        {% endif %}
+        {% if car.price %}
+            <p><strong>Price:</strong> <span style="font-weight: bold; color: darkred;">${{ car.price }}</span></p>
+        {% else %}
+            <p><strong>Price:</strong> <span style="font-weight: bold; color: darkred;">$0.00</span></p>
+        {% endif %}
+        
+        <!-- Booking Form -->
+        <form action="{% url 'book_car' car.id %}" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Book Now</button>
+        </form>
+        
+        <!-- Display form errors if any -->
+        {% if form.errors %}
+            <div class="form-errors">
+                <ul>
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+
+
+
+
+
+
+
+{% comment %} {% extends "base.html" %}
+{% block content %}
+  <h2>Book {{ car.make }} {{ car.model }}</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Book</button>
+  </form>
+{% endblock %} {% endcomment %}
+
+
+
+
